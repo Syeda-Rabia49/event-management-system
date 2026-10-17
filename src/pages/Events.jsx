@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   loadEvents, loadCategories, setFilters, resetFilters, setPage,
 } from '../features/events/eventsSlice';
+import { selectUserRegistrations } from '../features/registrations/registrationsSlice';
 import EventCard from '../components/EventCard';
 import SearchFilters from '../components/SearchFilters';
 import { Loader, ErrorMessage } from '../components/UI';
@@ -11,6 +12,7 @@ export default function Events() {
   const dispatch = useDispatch();
   const { items, status, error, page, totalPages, totalElements, filters, categories } =
     useSelector((s) => s.events);
+  const registeredIds = new Set(useSelector(selectUserRegistrations).map((e) => e.id));
 
   useEffect(() => { dispatch(loadCategories()); }, [dispatch]);
   useEffect(() => { dispatch(loadEvents()); }, [dispatch, filters, page]);
@@ -56,7 +58,8 @@ export default function Events() {
         <>
           <div className="grid">
             {items.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={event}
+                badge={registeredIds.has(event.id) ? '✓ Registered' : null} />
             ))}
           </div>
           <div className="pagination">
