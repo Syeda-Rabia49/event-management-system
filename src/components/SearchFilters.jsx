@@ -1,15 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { defaultFilters } from '../features/events/eventsSlice';
+
+const pick = (f) => ({
+  keyword: f.keyword,
+  city: f.city,
+  startDate: f.startDate,
+  sort: f.sort,
+});
 
 export default function SearchFilters({ filters, onApply, onReset }) {
-  const [draft, setDraft] = useState(filters);
-
-  useEffect(() => setDraft(filters), [filters]);
+  const [draft, setDraft] = useState(pick(filters));
 
   const change = (e) => setDraft({ ...draft, [e.target.name]: e.target.value });
 
   const submit = (e) => {
     e.preventDefault();
-    onApply({ ...draft, keyword: draft.keyword.trim(), city: draft.city.trim() });
+    onApply({ ...filters, ...draft, keyword: draft.keyword.trim(), city: draft.city.trim() });
+  };
+
+  const reset = () => {
+    setDraft(pick(defaultFilters));
+    onReset();
   };
 
   return (
@@ -24,7 +35,7 @@ export default function SearchFilters({ filters, onApply, onReset }) {
         <option value="relevance,desc">Most relevant</option>
       </select>
       <button type="submit" className="btn">Search</button>
-      <button type="button" className="btn btn-outline" onClick={onReset}>Reset</button>
+      <button type="button" className="btn btn-outline" onClick={reset}>Reset</button>
     </form>
   );
 }

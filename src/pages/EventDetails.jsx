@@ -19,7 +19,6 @@ export default function EventDetails() {
 
   useEffect(() => {
     dispatch(loadEventDetails(id));
-    setMessage(null);
   }, [dispatch, id]);
 
   if (event?.id !== id) {
@@ -39,13 +38,13 @@ export default function EventDetails() {
   const handleRegister = () => {
     if (isRegistered) return;
     dispatch(registerEvent({ userId: user.id, event }));
-    setMessage({ type: 'success', text: `You're registered for ${event.name}!` });
+    setMessage({ eventId: event.id, type: 'success', text: `You're registered for ${event.name}!` });
   };
 
   const handleCancel = () => {
     if (!window.confirm('Cancel your registration for this event?')) return;
     dispatch(cancelRegistration({ userId: user.id, eventId: event.id }));
-    setMessage({ type: 'info', text: 'Your registration has been cancelled.' });
+    setMessage({ eventId: event.id, type: 'info', text: 'Your registration has been cancelled.' });
   };
 
   return (
@@ -70,7 +69,9 @@ export default function EventDetails() {
         {event.info && <><h3>About</h3><p>{event.info}</p></>}
         {event.pleaseNote && <><h3>Please note</h3><p>{event.pleaseNote}</p></>}
 
-        {message && <div className={`alert alert-${message.type}`}>{message.text}</div>}
+        {message && message.eventId === event.id && (
+          <div className={`alert alert-${message.type}`}>{message.text}</div>
+        )}
 
         <div className="actions">
           {!user ? (
